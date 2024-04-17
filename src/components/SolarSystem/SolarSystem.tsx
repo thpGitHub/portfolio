@@ -19,7 +19,7 @@ const SolarSystem: React.FC = () => {
     });
 
     const starPositions = [];
-    const starsCount = 1000; // Number of stars
+    const starsCount = 10000; // Number of stars
 
     for (let i = 0; i < starsCount; i++) {
       const x = (Math.random() - 0.5) * 2000; // Extent of stars on the X axis
@@ -72,14 +72,25 @@ const SolarSystem: React.FC = () => {
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
     scene.add(sun);
 
-    // Planet
+    // Moon
+    const moonTexture = textureLoader.load("textureMoon.jpg");
     const planetGeometry = new THREE.SphereGeometry(0.3, 32, 32);
-    const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff }); // Blue for the planet
+    const planetMaterial = new THREE.MeshBasicMaterial({ map: moonTexture }); // Blue for the planet
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
     planet.position.x = 5; // Set the initial position of the planet
     scene.add(planet);
 
-    let angle = 0; // Angle to calculate the orbit position of the planet
+    let angleMoon = 0; // Angle to calculate the orbit position of the planet
+
+    // Mars
+    const marsTexture = textureLoader.load("textureMars.jpg");
+    const marsGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const marsMaterial = new THREE.MeshBasicMaterial({ map: marsTexture });
+    const mars = new THREE.Mesh(marsGeometry, marsMaterial);
+    mars.position.x = 8; // Set the initial position of Mars
+    scene.add(mars);
+
+    let angleMars = 0; // Angle to calculate the orbit position of Mars
 
     if (mountRef.current) {
       // Add an event listener for the mouse click
@@ -142,9 +153,14 @@ const SolarSystem: React.FC = () => {
       sun.rotation.y += 0.01;
 
       // Rotating the planet around the Sun
-      angle += 0.01; // Rotation speed
-      planet.position.x = Math.cos(angle) * 5; // Calculate the new x position
-      planet.position.z = Math.sin(angle) * 5; // Calculate the new z position
+      angleMoon += 0.01; // Rotation speed
+      planet.position.x = Math.cos(angleMoon) * 5; // Calculate the new x position
+      planet.position.z = Math.sin(angleMoon) * 5; // Calculate the new z position
+
+      // Rotating Mars around the Sun
+      angleMars += 0.008; // Rotation speed for Mars, you can adjust this value
+      mars.position.x = Math.cos(angleMars) * 8; // Calculate the new x position for Mars
+      mars.position.z = Math.sin(angleMars) * 8; // Calculate the new z position for Mars
 
       // Update the position of the text to follow the planet
       if (textMesh) {
