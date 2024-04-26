@@ -10,6 +10,9 @@ import { useRouter } from "next/navigation";
 const SolarSystem: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  // let textMesh: THREE.Mesh | null = null; // Declare textMesh with explicit type
+  // let textMesh: THREE.Mesh = new THREE.Mesh();
+  const textMeshRef = useRef<THREE.Mesh>();
 
   function createStarField() {
     const starsGeometry = new THREE.BufferGeometry();
@@ -48,7 +51,42 @@ const SolarSystem: React.FC = () => {
       0.1,
       1000
     );
+    let isMouseOverPlanet = false;
+    // Create a variable to track the target position for the camera
+    let cameraTarget: THREE.Vector3 | null = null;
+
     camera.position.z = 10;
+
+    // Update the mouse variable when the mouse moves
+    window.addEventListener(
+      "mousemove",
+      (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      },
+      false
+    );
+
+    // Check for intersections when the mouse is clicked
+    window.addEventListener(
+      "mousedown",
+      (event) => {
+        // Only check for intersections if the mouse is not currently over a planet
+        if (!isMouseOverPlanet) return;
+
+        // Update the picking ray with the camera and mouse position
+        raycaster.setFromCamera(mouse, camera);
+
+        // Calculate objects intersecting the picking ray
+        const intersects = raycaster.intersectObjects([planet, mars]);
+
+        if (intersects.length > 0) {
+          // Set the camera target to the position of the first intersected object
+          cameraTarget = intersects[0].object.position.clone();
+        }
+      },
+      false
+    );
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -116,62 +154,102 @@ const SolarSystem: React.FC = () => {
     }
 
     // Text
-    let textMesh: THREE.Mesh | null = null;
+    // let textMesh: THREE.Mesh | null = null;
+    // textMesh: THREE.Mesh;
 
     // Load the font
     const fontLoader = new FontLoader();
+    let textGeometry: TextGeometry;
+    let textMaterial: THREE.MeshBasicMaterial;
+
     fontLoader.load(
       "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
       function (font) {
         // Create the text geometry
-        const textGeometry = new TextGeometry("Planet Text", {
+        textGeometry = new TextGeometry("Planet Text", {
           font: font,
           size: 0.5, // size of the text
           height: 0.1, // thickness to extrude text
         });
 
         // Create the text material
-        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
         // Create the text mesh
-        textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        // textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        textMeshRef.current = new THREE.Mesh(textGeometry, textMaterial);
 
         // Position the text
-        textMesh.position.x = planet.position.x;
-        textMesh.position.y = planet.position.y + 2; // adjust this value to move the text up or down
-        textMesh.position.z = planet.position.z;
+        textMeshRef.current.position.x = planet.position.x;
+        textMeshRef.current.position.y = planet.position.y + 0.5; // adjust this value to move the text up or down
+        textMeshRef.current.position.z = planet.position.z;
 
         // Add the text to the scene
-        scene.add(textMesh);
+        scene.add(textMeshRef.current);
       }
     );
 
     const animate = () => {
-      requestAnimationFrame(animate);
+      if (!isMouseOverPlanet && !cameraTarget) {
+        // ... (your animation code)
+        // requestAnimationFrame(animate);
 
-      // Rotating the Sun
-      sun.rotation.y += 0.01;
+        // Rotating the Sun
+        sun.rotation.y += 0.01;
 
-      // Rotating the planet around the Sun
-      angleMoon += 0.01; // Rotation speed
-      planet.position.x = Math.cos(angleMoon) * 5; // Calculate the new x position
-      planet.position.z = Math.sin(angleMoon) * 5; // Calculate the new z position
+        // Rotating the planet around the Sun
+        angleMoon += 0.01; // Rotation speed
+        planet.position.x = Math.cos(angleMoon) * 5; // Calculate the new x position
+        planet.position.z = Math.sin(angleMoon) * 5; // Calculate the new z position
 
-      // Rotating Mars around the Sun
-      angleMars += 0.008; // Rotation speed for Mars, you can adjust this value
-      mars.position.x = Math.cos(angleMars) * 8; // Calculate the new x position for Mars
-      mars.position.z = Math.sin(angleMars) * 8; // Calculate the new z position for Mars
+        // Rotating Mars around the Sun
+        // const textMeshRef = useRef<THREE.Mesh | null>(null);
+        // textMeshRef.current = new THREE.Mesh(textGeometry, textMaterial);
 
-      // Update the position of the text to follow the planet
-      if (textMesh) {
-        textMesh.position.x = planet.position.x;
-        textMesh.position.y = planet.position.y + 2;
-        textMesh.position.z = planet.position.z;
+        angleMars += 0.008; // Rotation speed for Mars, you can adjust this value
+        mars.position.x = Math.cos(angleMars) * 8; // Calculate the new x position for Mars
+        mars.position.z = Math.sin(angleMars) * 8; // Calculate the new z position for Mars
+
+        // Update the position of the text to follow the planet
+        if (textMeshRef.current) {
+          textMeshRef.current.position.x = planet.position.x;
+          textMeshRef.current.position.y = planet.position.y + 0.5;
+          textMeshRef.current.position.z = planet.position.z;
+        }
+
+        controls.update();
+
+        renderer.render(scene, camera);
+      }
+      // Update the picking ray with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+
+      // Calculate objects intersecting the picking ray
+      const intersects = raycaster.intersectObjects([planet, mars]);
+
+      if (intersects.length > 0) {
+        // Change the cursor to pointer if the mouse is over the planet or Mars
+        renderer.domElement.style.cursor = "pointer";
+        isMouseOverPlanet = true;
+      } else {
+        // Change the cursor back to default if the mouse is not over the planet or Mars
+        renderer.domElement.style.cursor = "default";
+        isMouseOverPlanet = false;
       }
 
-      controls.update();
+      // If a camera target is set, move the camera towards the target
+      if (cameraTarget) {
+        camera.position.lerp(cameraTarget, 0.05);
+        camera.lookAt(cameraTarget);
 
-      renderer.render(scene, camera);
+        // If the camera is close enough to the target, stop moving the camera and redirect to another page
+        if (camera.position.distanceTo(cameraTarget) < 0.1) {
+          cameraTarget = null;
+          window.location.href = "https://www.example.com"; // Replace with your URL
+        }
+      }
+
+      requestAnimationFrame(animate);
     };
 
     const starField = createStarField();
