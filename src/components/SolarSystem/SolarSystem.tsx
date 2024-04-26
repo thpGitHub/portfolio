@@ -68,25 +68,33 @@ const SolarSystem: React.FC = () => {
     );
 
     // Check for intersections when the mouse is clicked
-    window.addEventListener(
-      "mousedown",
-      (event) => {
-        // Only check for intersections if the mouse is not currently over a planet
-        if (!isMouseOverPlanet) return;
+    // window.addEventListener(
+    //   "mousedown",
+    //   (event) => {
+    //     // Only check for intersections if the mouse is not currently over a planet
+    //     if (!isMouseOverPlanet) return;
 
-        // Update the picking ray with the camera and mouse position
-        raycaster.setFromCamera(mouse, camera);
+    //     // Update the picking ray with the camera and mouse position
+    //     raycaster.setFromCamera(mouse, camera);
 
-        // Calculate objects intersecting the picking ray
-        const intersects = raycaster.intersectObjects([planet, mars]);
+    //     // Calculate objects intersecting the picking ray
+    //     const intersects = raycaster.intersectObjects([planet, mars]);
 
-        if (intersects.length > 0) {
-          // Set the camera target to the position of the first intersected object
-          cameraTarget = intersects[0].object.position.clone();
-        }
-      },
-      false
-    );
+    //     if (intersects.length > 0) {
+    //       // Set the planet to be the first intersected object
+    //       const selectedPlanet = intersects[0].object;
+
+    //       // Increase the size of the planet to cover the screen
+    //       selectedPlanet.scale.set(10, 10, 10); // Adjust the scale values as needed
+
+    //       // Redirect to another page after a delay to allow the planet to grow
+    //       setTimeout(() => {
+    //         window.location.href = "https://www.example.com"; // Replace with your URL
+    //       }, 2000); // Adjust the delay as needed
+    //     }
+    //   },
+    //   false
+    // );
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -153,9 +161,9 @@ const SolarSystem: React.FC = () => {
       });
     }
 
-    // Text
-    // let textMesh: THREE.Mesh | null = null;
-    // textMesh: THREE.Mesh;
+    Text
+    let textMesh: THREE.Mesh | null = null;
+    textMesh: THREE.Mesh;
 
     // Load the font
     const fontLoader = new FontLoader();
@@ -190,7 +198,7 @@ const SolarSystem: React.FC = () => {
     );
 
     const animate = () => {
-      if (!isMouseOverPlanet && !cameraTarget) {
+      if (!isMouseOverPlanet) {
         // ... (your animation code)
         // requestAnimationFrame(animate);
 
@@ -221,6 +229,7 @@ const SolarSystem: React.FC = () => {
 
         renderer.render(scene, camera);
       }
+
       // Update the picking ray with the camera and mouse position
       raycaster.setFromCamera(mouse, camera);
 
@@ -235,18 +244,6 @@ const SolarSystem: React.FC = () => {
         // Change the cursor back to default if the mouse is not over the planet or Mars
         renderer.domElement.style.cursor = "default";
         isMouseOverPlanet = false;
-      }
-
-      // If a camera target is set, move the camera towards the target
-      if (cameraTarget) {
-        camera.position.lerp(cameraTarget, 0.05);
-        camera.lookAt(cameraTarget);
-
-        // If the camera is close enough to the target, stop moving the camera and redirect to another page
-        if (camera.position.distanceTo(cameraTarget) < 0.1) {
-          cameraTarget = null;
-          window.location.href = "https://www.example.com"; // Replace with your URL
-        }
       }
 
       requestAnimationFrame(animate);
