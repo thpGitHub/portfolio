@@ -3,6 +3,7 @@ import React from "react";
 import "./style.css"; // Assurez-vous de créer ce fichier CSS
 import Image from "next/image";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { Highlight } from "@/components/ui/hero-highlight";
 
 const ContactPage = () => {
   const handleSubmit = (event: React.FormEvent) => {
@@ -13,7 +14,9 @@ const ContactPage = () => {
 
   return (
     <div className="contact-container">
-      <h1>Contactez-moi</h1>
+      <Highlight className="text-black dark:text-white">
+        <h1>Contactez-moi</h1>
+      </Highlight>
       <div className="content-container">
         <div className="form-container">
           <form onSubmit={handleSubmit}>
