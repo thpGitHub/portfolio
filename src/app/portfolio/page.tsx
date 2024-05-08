@@ -11,14 +11,19 @@ export default function TracingBeamDemo() {
       <div className="max-w-2xl mx-auto antialiased pt-4 relative">
         {dummyContent.map((item, index) => (
           <div key={`content-${index}`} className="mb-10">
-            <h2 className="bg-black text-white rounded-full text-sm w-fit px-4 py-1 mb-4">
-              {item.badge}
-            </h2>
+            <div className="flex">
+              {item.badge.map((badge, badgeIndex) => (
+                <h2
+                  key={`badge-${badgeIndex}`}
+                  className={`${getBadgeColor(badge)} text-white rounded-full text-sm w-fit px-4 py-1 mb-4 mr-2`}
+                >
+                  {badge}
+                </h2>
+              ))}
+            </div>
 
             {/* <p className={twMerge(calsans.className, "text-xl mb-4")}> */}
-            <p className="text-xl mb-4">
-              {item.title}
-            </p>
+            <p className="text-xl mb-4">{item.title}</p>
 
             <div className="text-sm  prose prose-sm dark:prose-invert">
               {item?.image && (
@@ -41,7 +46,7 @@ export default function TracingBeamDemo() {
 
 const dummyContent = [
   {
-    title: "Lorem Ipsum Dolor Sit Amet",
+    title: "Site e-commerce de vente de produits de beauté",
     description: (
       <>
         <p>
@@ -69,12 +74,12 @@ const dummyContent = [
         </p>
       </>
     ),
-    badge: "React",
+    badge: ["React", "Laravel"],
     image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "/DALL·E 2024-05-08 10.59.26 - An illustration of an e-commerce website.webp",
   },
   {
-    title: "Lorem Ipsum Dolor Sit Amet",
+    title: "Application de navigation GPS en temps réel",
     description: (
       <>
         <p>
@@ -93,12 +98,12 @@ const dummyContent = [
         </p>
       </>
     ),
-    badge: "Changelog",
+    badge: ["Next.js", "Node.js"],
     image:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "/DALL·E 2024-05-08 11.01.10 - An illustration of a GPS application.webp",
   },
   {
-    title: "Lorem Ipsum Dolor Sit Amet",
+    title: "Clone de l'application de streaming Netflix",
     description: (
       <>
         <p>
@@ -111,8 +116,27 @@ const dummyContent = [
         </p>
       </>
     ),
-    badge: "Launch Week",
+    badge: ["Vue.js", "Express.js"],
     image:
-      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=3506&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "/DALL·E 2024-05-08 11.02.08 - An illustration of a Netflix clone.webp",
   },
 ];
+
+function getBadgeColor(badge: string) {
+  switch (badge) {
+    case 'Next.js':
+      return 'bg-red-500';
+    case 'Node.js':
+      return 'bg-green-500';
+    case 'React':
+      return 'bg-blue-500';
+    case 'Laravel':
+      return 'bg-yellow-500';
+    case 'Vue.js':
+      return 'bg-green-500';
+    case 'Express.js':
+      return 'bg-gray-500';
+    default:
+      return 'bg-black';
+  }
+}
