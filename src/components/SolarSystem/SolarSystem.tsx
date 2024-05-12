@@ -12,6 +12,8 @@ const SolarSystem: React.FC = () => {
   const textMeshRef = useRef<THREE.Mesh>();
   const textMeshMarsRef = useRef<THREE.Mesh | null>(null);
   const textMeshJupiterRef = useRef<THREE.Mesh | null>(null);
+  const textMeshWelcomeRef = useRef<THREE.Mesh | null>(null);
+
 
   function createStarField() {
     const starsGeometry = new THREE.BufferGeometry();
@@ -152,6 +154,8 @@ const SolarSystem: React.FC = () => {
     let textGeometryMars: TextGeometry;
     let textGeometryJupiter: TextGeometry;
     let textMaterial: THREE.MeshBasicMaterial;
+    let textGeometryWelcome: TextGeometry;
+    
 
     fontLoader.load(
       // "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
@@ -175,17 +179,28 @@ const SolarSystem: React.FC = () => {
           height: 0.01,
         });
 
+        textGeometryWelcome = new TextGeometry("Bienvenue sur mon Portfolio", {
+          font: font,
+          size: 0.5,
+          height: 0.001,
+        });
+
         // Create the text material
         textMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
 
         // Create the text mesh
         textMeshRef.current = new THREE.Mesh(textGeometry, textMaterial);
+
         textMeshMarsRef.current = new THREE.Mesh(
           textGeometryMars,
           textMaterial
         );
         textMeshJupiterRef.current = new THREE.Mesh(
           textGeometryJupiter,
+          textMaterial
+        );
+        textMeshWelcomeRef.current = new THREE.Mesh(
+          textGeometryWelcome,
           textMaterial
         );
 
@@ -198,6 +213,7 @@ const SolarSystem: React.FC = () => {
         scene.add(textMeshRef.current);
         scene.add(textMeshMarsRef.current);
         scene.add(textMeshJupiterRef.current);
+        scene.add(textMeshWelcomeRef.current);
       },
       undefined,
       function (error) {
@@ -208,7 +224,10 @@ const SolarSystem: React.FC = () => {
     const animate = () => {
       if (!isMouseOverPlanet) {
         sun.rotation.y += 0.01;
-
+        planet.rotation.y += 0.02;
+        mars.rotation.y += 0.03;
+        jupiter.rotation.y += 0.04;
+        
         // Rotating the planet around the Sun
         angleMoon += 0.01; // Rotation speed
         planet.position.x = Math.cos(angleMoon) * 5; // Calculate the new x position
@@ -240,6 +259,12 @@ const SolarSystem: React.FC = () => {
           textMeshJupiterRef.current.position.x = jupiter.position.x;
           textMeshJupiterRef.current.position.y = jupiter.position.y + 0.9;
           textMeshJupiterRef.current.position.z = jupiter.position.z;
+        }
+
+        if (textMeshWelcomeRef.current) {
+          textMeshWelcomeRef.current.position.x = - 5.9;
+          textMeshWelcomeRef.current.position.y = 4;
+          textMeshWelcomeRef.current.position.z = 0;
         }
 
         controls.update();

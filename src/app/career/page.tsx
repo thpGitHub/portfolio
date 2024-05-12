@@ -2,6 +2,7 @@
 import React from "react";
 import { StickyScroll } from "../../components/ui/sticky-scroll-reveal";
 import Image from "next/image";
+import HomeIcon from "@/components/HomeIcon/HomeIcon";
 
 const content = [
   {
@@ -52,6 +53,7 @@ const content = [
 export default function Career() {
   return (
     <div className="bg-black h-screen">
+      <HomeIcon />
     <h1 className="text-4xl font-bold text-center text-white pt-10">Career</h1>
       <div className="p-10">
         <StickyScroll content={content} />

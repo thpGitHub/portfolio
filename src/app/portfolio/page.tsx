@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
 import { TracingBeam } from "../../components//ui/tracing-beam";
+import HomeIcon from "@/components/HomeIcon/HomeIcon";
 
 export default function TracingBeamDemo() {
   const BackgroundImageUrl =
@@ -18,6 +19,7 @@ export default function TracingBeamDemo() {
         width: "100%",
       }}
     >
+      <HomeIcon />
       <TracingBeam className="px-6 bg-black bg-opacity-50">
         <div className="max-w-2xl mx-auto antialiased pt-4 relative pb-[500px] text-white">
           {dummyContent.map((item, index) => (
