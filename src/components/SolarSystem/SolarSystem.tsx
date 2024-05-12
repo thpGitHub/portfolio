@@ -4,15 +4,14 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { FontLoader } from "three/addons/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
-// import { useRouter } from 'next/router';
 import { useRouter } from "next/navigation";
 
 const SolarSystem: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  // let textMesh: THREE.Mesh | null = null; // Declare textMesh with explicit type
-  // let textMesh: THREE.Mesh = new THREE.Mesh();
   const textMeshRef = useRef<THREE.Mesh>();
+  const textMeshMarsRef = useRef<THREE.Mesh | null>(null);
+  const textMeshJupiterRef = useRef<THREE.Mesh | null>(null);
 
   function createStarField() {
     const starsGeometry = new THREE.BufferGeometry();
@@ -25,9 +24,9 @@ const SolarSystem: React.FC = () => {
     const starsCount = 10000; // Number of stars
 
     for (let i = 0; i < starsCount; i++) {
-      const x = (Math.random() - 0.5) * 2000; // Extent of stars on the X axis
-      const y = (Math.random() - 0.5) * 2000; // Extent of stars on the Y axis
-      const z = (Math.random() - 0.5) * 2000; // Extent of stars on the Z axis
+      const x = (Math.random() - 0.5) * 2000;
+      const y = (Math.random() - 0.5) * 2000;
+      const z = (Math.random() - 0.5) * 2000;
       starPositions.push(x, y, z);
     }
 
@@ -43,7 +42,7 @@ const SolarSystem: React.FC = () => {
   useEffect(() => {
     const currentRef = mountRef.current;
     const scene = new THREE.Scene();
-    const raycaster = new THREE.Raycaster(); // Create a Raycaster
+    const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2(); // Create a Vector for the mouse position
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -67,35 +66,6 @@ const SolarSystem: React.FC = () => {
       false
     );
 
-    // Check for intersections when the mouse is clicked
-    // window.addEventListener(
-    //   "mousedown",
-    //   (event) => {
-    //     // Only check for intersections if the mouse is not currently over a planet
-    //     if (!isMouseOverPlanet) return;
-
-    //     // Update the picking ray with the camera and mouse position
-    //     raycaster.setFromCamera(mouse, camera);
-
-    //     // Calculate objects intersecting the picking ray
-    //     const intersects = raycaster.intersectObjects([planet, mars]);
-
-    //     if (intersects.length > 0) {
-    //       // Set the planet to be the first intersected object
-    //       const selectedPlanet = intersects[0].object;
-
-    //       // Increase the size of the planet to cover the screen
-    //       selectedPlanet.scale.set(10, 10, 10); // Adjust the scale values as needed
-
-    //       // Redirect to another page after a delay to allow the planet to grow
-    //       setTimeout(() => {
-    //         window.location.href = "https://www.example.com"; // Replace with your URL
-    //       }, 2000); // Adjust the delay as needed
-    //     }
-    //   },
-    //   false
-    // );
-
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     if (mountRef.current) {
@@ -112,7 +82,7 @@ const SolarSystem: React.FC = () => {
 
     // Texture loader
     const textureLoader = new THREE.TextureLoader();
-    const sunTexture = textureLoader.load("textureEarth.jpg"); // Sun
+    const sunTexture = textureLoader.load("textureEarth.jpg");
     const sunGeometry = new THREE.SphereGeometry(1, 32, 32);
     const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
     const sun = new THREE.Mesh(sunGeometry, sunMaterial);
@@ -138,54 +108,86 @@ const SolarSystem: React.FC = () => {
 
     let angleMars = 0; // Angle to calculate the orbit position of Mars
 
+    // Jupiter
+    const jupiterTexture = textureLoader.load("textureJupiter.jpg");
+    const jupiterGeometry = new THREE.SphereGeometry(0.7, 32, 32); // taille de la planète
+    const jupiterMaterial = new THREE.MeshBasicMaterial({
+      map: jupiterTexture,
+    });
+    const jupiter = new THREE.Mesh(jupiterGeometry, jupiterMaterial);
+    jupiter.position.x = 12; // position initiale de Jupiter
+    scene.add(jupiter);
+
+    let angleJupiter = 0;
+
     if (mountRef.current) {
       // Add an event listener for the mouse click
       mountRef.current.addEventListener("click", (event) => {
-        // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        // Update the picking ray with the camera and mouse position
         raycaster.setFromCamera(mouse, camera);
 
-        // Calculate objects intersecting the picking ray
         const intersects = raycaster.intersectObjects(scene.children);
 
         for (let i = 0; i < intersects.length; i++) {
-          // If the planet is clicked
           if (intersects[i].object === planet) {
-            console.log("Planet clicked");
-            router.push("/newPage"); // Navigate to the new page
+            router.push("/contact");
+          } else if (intersects[i].object === mars) {
+            router.push("/career");
+          } else if (intersects[i].object === jupiter) {
+            router.push("/portfolio");
           }
         }
       });
     }
 
-    Text
+    Text;
     let textMesh: THREE.Mesh | null = null;
     textMesh: THREE.Mesh;
 
     // Load the font
     const fontLoader = new FontLoader();
     let textGeometry: TextGeometry;
+    let textGeometryMars: TextGeometry;
+    let textGeometryJupiter: TextGeometry;
     let textMaterial: THREE.MeshBasicMaterial;
 
     fontLoader.load(
-      "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+      // "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+      "fonts/Star_Jedi_Regular.json",
       function (font) {
-        // Create the text geometry
-        textGeometry = new TextGeometry("Planet Text", {
+        textGeometry = new TextGeometry("Contact", {
           font: font,
-          size: 0.5, // size of the text
-          height: 0.1, // thickness to extrude text
+          size: 0.2,
+          height: 0.01,
+        });
+
+        textGeometryMars = new TextGeometry("Parcours", {
+          font: font,
+          size: 0.2,
+          height: 0.01,
+        });
+
+        textGeometryJupiter = new TextGeometry("Portfolio", {
+          font: font,
+          size: 0.2,
+          height: 0.01,
         });
 
         // Create the text material
-        textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        textMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700 });
 
         // Create the text mesh
-        // textMesh = new THREE.Mesh(textGeometry, textMaterial);
         textMeshRef.current = new THREE.Mesh(textGeometry, textMaterial);
+        textMeshMarsRef.current = new THREE.Mesh(
+          textGeometryMars,
+          textMaterial
+        );
+        textMeshJupiterRef.current = new THREE.Mesh(
+          textGeometryJupiter,
+          textMaterial
+        );
 
         // Position the text
         textMeshRef.current.position.x = planet.position.x;
@@ -194,15 +196,17 @@ const SolarSystem: React.FC = () => {
 
         // Add the text to the scene
         scene.add(textMeshRef.current);
+        scene.add(textMeshMarsRef.current);
+        scene.add(textMeshJupiterRef.current);
+      },
+      undefined,
+      function (error) {
+        console.error(error);
       }
     );
 
     const animate = () => {
       if (!isMouseOverPlanet) {
-        // ... (your animation code)
-        // requestAnimationFrame(animate);
-
-        // Rotating the Sun
         sun.rotation.y += 0.01;
 
         // Rotating the planet around the Sun
@@ -211,18 +215,31 @@ const SolarSystem: React.FC = () => {
         planet.position.z = Math.sin(angleMoon) * 5; // Calculate the new z position
 
         // Rotating Mars around the Sun
-        // const textMeshRef = useRef<THREE.Mesh | null>(null);
-        // textMeshRef.current = new THREE.Mesh(textGeometry, textMaterial);
+        angleMars += 0.008; // Rotation speed for Mars
+        mars.position.x = Math.cos(angleMars) * 8;
+        mars.position.z = Math.sin(angleMars) * 8;
 
-        angleMars += 0.008; // Rotation speed for Mars, you can adjust this value
-        mars.position.x = Math.cos(angleMars) * 8; // Calculate the new x position for Mars
-        mars.position.z = Math.sin(angleMars) * 8; // Calculate the new z position for Mars
+        angleJupiter += 0.006;
+        jupiter.position.x = Math.cos(angleJupiter) * 12;
+        jupiter.position.z = Math.sin(angleJupiter) * 12;
 
-        // Update the position of the text to follow the planet
+        // position of the text to follow the planet
         if (textMeshRef.current) {
           textMeshRef.current.position.x = planet.position.x;
           textMeshRef.current.position.y = planet.position.y + 0.5;
           textMeshRef.current.position.z = planet.position.z;
+        }
+
+        if (textMeshMarsRef.current) {
+          textMeshMarsRef.current.position.x = mars.position.x;
+          textMeshMarsRef.current.position.y = mars.position.y + 0.7;
+          textMeshMarsRef.current.position.z = mars.position.z;
+        }
+
+        if (textMeshJupiterRef.current) {
+          textMeshJupiterRef.current.position.x = jupiter.position.x;
+          textMeshJupiterRef.current.position.y = jupiter.position.y + 0.9;
+          textMeshJupiterRef.current.position.z = jupiter.position.z;
         }
 
         controls.update();
@@ -234,7 +251,7 @@ const SolarSystem: React.FC = () => {
       raycaster.setFromCamera(mouse, camera);
 
       // Calculate objects intersecting the picking ray
-      const intersects = raycaster.intersectObjects([planet, mars]);
+      const intersects = raycaster.intersectObjects([planet, mars, jupiter]);
 
       if (intersects.length > 0) {
         // Change the cursor to pointer if the mouse is over the planet or Mars
