@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Highlight } from "@/components/ui/hero-highlight";
 import HomeIcon from "@/components/HomeIcon/HomeIcon";
+import { Button } from "@/components/ui/moving-border";
 
 const ContactPage = () => {
   const [email, setEmail] = useState("");
@@ -38,7 +39,13 @@ const ContactPage = () => {
               <label htmlFor="message">Message:</label>
               <textarea id="message" name="message" required></textarea>
 
-              <button type="submit">Envoyer</button>
+              {/* <button type="submit">Envoyer</button> */}
+              <Button
+                borderRadius="1.75rem"
+                className="bg-transparent dark:bg-slate-900 text-white dark:text-black border-neutral-200 dark:border-slate-800"
+              >
+                Envoyer
+              </Button>
             </form>
           </div>
           <div className="contact-image-container">

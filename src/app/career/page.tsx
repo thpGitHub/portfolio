@@ -3,6 +3,7 @@ import React from "react";
 import { StickyScroll } from "../../components/ui/sticky-scroll-reveal";
 import Image from "next/image";
 import HomeIcon from "@/components/HomeIcon/HomeIcon";
+import './style.css';
 
 const content = [
   {
@@ -51,11 +52,22 @@ const content = [
   },
 ];
 export default function Career() {
+  const yourImageUrl =
+    "fictif-fond-espace-vol-comete-vers-planete-fictive.jpg";
   return (
-    <div className="bg-black h-screen">
+    // <div className="bg-black h-screen">
+    <div
+      className="h-screen"
+      style={{
+        backgroundImage: `url(${yourImageUrl})`,
+        backgroundSize: "cover",
+      }}
+    >
       <HomeIcon />
-    <h1 className="text-4xl font-bold text-center text-white pt-10">Career</h1>
-      <div className="p-10">
+      <h1 className="text-4xl font-bold text-center text-white pt-10">
+        Career
+      </h1>
+      <div className="pt-20 px-40 opacity-80" >
         <StickyScroll content={content} />
       </div>
     </div>
