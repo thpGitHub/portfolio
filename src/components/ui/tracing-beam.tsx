@@ -25,26 +25,37 @@ export const TracingBeam = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [svgHeight, setSvgHeight] = useState(0);
 
+  // useEffect(() => {
+  //   if (contentRef.current) {
+  //     setSvgHeight(contentRef.current.offsetHeight - 200);
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (contentRef.current) {
-      setSvgHeight(contentRef.current.offsetHeight - 2000);
-    }
-  }, []);
+    const updateHeight = () => {
+      if (contentRef.current) {
+        setSvgHeight(contentRef.current.offsetHeight - 200);
+      }
+    };
+
+    updateHeight();
+
+    window.addEventListener("resize", updateHeight);
+
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []); 
 
   const y1 = useSpring(
-    useTransform(scrollYProgress, [0, 0.8], [50, svgHeight - 200]),
+    useTransform(scrollYProgress, [0, 0.8], [50, svgHeight]),
     {
       stiffness: 500,
       damping: 90,
     }
   );
-  const y2 = useSpring(
-    useTransform(scrollYProgress, [0, 1], [50, svgHeight - 200]),
-    {
-      stiffness: 500,
-      damping: 90,
-    }
-  );
+  const y2 = useSpring(useTransform(scrollYProgress, [0, 1], [50, svgHeight]), {
+    stiffness: 500,
+    damping: 90,
+  });
 
   return (
     <motion.div
